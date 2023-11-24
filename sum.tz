@@ -1,0 +1,22 @@
+{ parameter (or (address %set_owner) (nat %add)) ;
+  storage (pair (nat %counter) (address %owner)) ;
+  code { UNPAIR ;
+         IF_LEFT
+           { SENDER ;
+             DUP 3 ;
+             CDR ;
+             SWAP ;
+             COMPARE ;
+             NEQ ;
+             IF { DROP 2 ; PUSH string "sender is not the current owner" ; FAILWITH }
+                { UPDATE 2 ; NIL operation ; PAIR } }
+           { SENDER ;
+             DUP 3 ;
+             CDR ;
+             SWAP ;
+             COMPARE ;
+             NEQ ;
+             IF { DROP 2 ; PUSH string "bad sender" ; FAILWITH }
+                { DUP 2 ; SWAP ; DIG 2 ; CAR ; ADD ; UPDATE 1 ; NIL operation ; PAIR } } } ;
+  view "get_storage" unit nat { CDR ; CAR } }
+
